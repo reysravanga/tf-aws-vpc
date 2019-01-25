@@ -134,7 +134,7 @@ jobs:
             export tf_version=<<parameters.tf_version>>
             tfenv install $tf_version
             tfenv use $tf_version
-            kitchen test --destory
+            kitchen test --destroy
 
 workflows:
   version: 2
