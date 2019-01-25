@@ -1,0 +1,40 @@
+---
+driver:
+  name: terraform
+provisioner:
+  name: terraform
+verifier:
+  name: terraform
+
+platforms:
+  - name: local
+    driver:
+      root_module_directory: test/fixtures/default
+      variable_files:
+        - test/fixtures/default/default.tfvars
+    verifier:
+      systems:
+        - name: local
+          backend: local
+          controls:
+            - state_file
+            - terraform_output
+  - name: aws
+    driver:
+      root_module_directory: test/fixtures/default
+      variable_files:
+        - test/fixtures/default/default.tfvars
+    verifier:
+      systems:
+        - name: aws
+          backend: aws
+          controls:
+            - aws_vpc
+
+suites:
+  - name: local
+    includes:
+      - local
+  - name: aws
+    includes:
+      - aws

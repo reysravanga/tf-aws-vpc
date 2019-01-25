@@ -1,0 +1,153 @@
+---
+version: 2.1
+
+commands:
+  prepare_tf_code_volume:
+    description: prepare docker volume container for codes
+    parameters:
+      target_dir:
+        description: "base dir where to copy terraform code"
+        type: string
+        default: "/"
+    steps:
+      - run:
+          name: prepare docker volume container for codes
+          command: |
+            export target_dir=<<parameters.target_dir>>
+            docker create -v ${target_dir}project --name code alpine:3.8 /bin/true
+            docker cp ~/project code:${target_dir}
+            docker run --rm --volumes-from code alpine:3.8 sh -c 'find /project -type d | grep -v -E "(\.git|\.circleci)" | while read dir; do echo $dir; ls -asl $dir; done'
+  terraform_init:
+    description: terraform init
+    parameters:
+      tf_version:
+        description: "terraform version to test"
+        type: string
+        default: "0.11.11"
+      workdir:
+        description: "working dir where tf code exists"
+        type: string
+        default: "/project"
+    steps:
+      - run:
+          name: terraform init
+          command: 
+            docker run --workdir <<parameters.workdir>> --volumes-from code hashicorp/terraform:<<parameters.tf_version>> init -input=false
+  terraform_validate:
+    description: terraform validate
+    parameters:
+      tf_version:
+        description: "terraform version to test"
+        type: string
+        default: "0.11.11"
+      workdir:
+        description: "working dir where tf code exists"
+        type: string
+        default: "/project"
+    steps:
+      - run:
+          name: terraform validate
+          command: |
+            export workdir=<<parameters.workdir>>
+            export tf_version=<<parameters.tf_version>>
+            find $(pwd) -type f -name "*.tf" -exec dirname {} \; | sed "s/$(pwd|sed 's/\//\\\//g')/\\${workdir}/" | sort -u | while read pn; do docker run --volumes-from code --workdir $workdir hashicorp/terraform:$tf_version validate -check-variables=false $pn; if [[ $? -ne 0 ]]; then echo -e "\e[1;31m✗ $pn\e[0m" && exit 1; else echo -e "\e[1;32m√ $pn\e[0m"; fi done
+  terraform_fmt_check:
+    description: terraform fmt check
+    parameters:
+      tf_version:
+        description: "terraform version to test"
+        type: string
+        default: "0.11.11"
+      workdir:
+        description: "working dir where tf code exists"
+        type: string
+        default: "/project"
+    steps:
+      - run:
+          name: terraform fmt
+          command: |
+            export workdir=<<parameters.workdir>>
+            export tf_version=<<parameters.tf_version>>
+            docker run --volumes-from code --workdir $workdir hashicorp/terraform:$tf_version fmt -write=false
+            if [[ $? -ne 0 ]]; then echo -e "\e[1;31mRun \`terraform fmt\` before tf source commit\e[0m" && exit 1; fi
+  tflint_check:
+    description: "tflint check"
+    parameters:
+      workdir:
+        description: "working dir where tf code exists"
+        type: string
+        default: "/project"
+    steps:
+      - run:
+          name: tflint check
+          command: |
+            export workdir=<<parameters.workdir>>
+            cd ~/project
+            export tf_modules=$(egrep -rh "source[\ ]*=[ ]*\"" ./ | awk -F '"' '{print $2}' | sort -u | paste -s -d ',' -)
+            echo "\e[1;31mtf_modules to be ignored:\e[0m $tf_modules"
+            echo "refer to https://github.com/wata727/tflint/issues/167 for details"
+            find $(pwd) -type f -name "*.tf" -exec dirname {} \; | sed "s/$(pwd|sed 's/\//\\\//g')/${workdir//\//\\/}/" | sort -u | while read pn; do docker run --rm --volumes-from code --workdir $pn -t wata727/tflint -q --deep --ignore-module=$tf_modules || (echo -e "\e[1;31m✗ ${pn//${workdir//\//\\/}/\.}\e[0m"; exit 1); if [[ $? -eq 0 ]]; then echo -e "\e[1;32m√ ${pn//${workdir//\//\\/}/\.}\e[0m"; fi done
+
+jobs:
+  terraform_basic_tc:
+    parameters:
+      tf_version:
+        description: "terraform version to test"
+        type: string
+        default: "0.11.11"
+    docker:
+      - image: circleci/ruby:latest
+    steps:
+      - checkout
+      - setup_remote_docker
+      - prepare_tf_code_volume
+      - terraform_init:
+          tf_version: <<parameters.tf_version>>
+      - terraform_validate:
+          tf_version: <<parameters.tf_version>>
+      - terraform_fmt_check:
+          tf_version: <<parameters.tf_version>>
+      - tflint_check
+  kitchen_tc:
+    parameters:
+      tf_version:
+        description: "terraform version to test"
+        type: string
+        default: "0.11.11"
+    docker:
+      - image: circleci/ruby:latest
+    steps:
+      - checkout
+      - setup_remote_docker
+      - prepare_tf_code_volume
+      - run:
+          name: Install dependencies
+          command: bundle install
+      - run:
+          name: check testsuite Rubocop
+          command: rubocop test
+      - run:
+          name: test-kitchen
+          command: |
+            git clone https://github.com/kamatama41/tfenv.git ~/.tfenv
+            export PATH="$HOME/.tfenv/bin:$PATH"
+            export tf_version=<<parameters.tf_version>>
+            tfenv install $tf_version
+            tfenv use $tf_version
+            kitchen test --destroy
+
+workflows:
+  version: 2
+  test:
+    jobs:
+      - terraform_basic_tc:
+          name: tf_11
+          tf_version: 0.11.11
+#      - terraform_basic_tc:
+#          name: tf_10
+#          tf_version: 0.10.8
+      - kitchen_tc:
+          tf_version: 0.11.11
+          requires:
+            - tf_11
+#            - tf_10
