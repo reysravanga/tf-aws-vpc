@@ -1,0 +1,9 @@
+name: default
+title: Sample InSpec Profile
+maintainer: ukslee
+copyright: 2019 ukslee
+copyright_email: uks78n@gmail.com
+license: Apache-2.0
+summary: An default InSpec Compliance Profile For an AWS terraform module
+version: 0.1.0
+inspec_version: '>= 2.3.5'
