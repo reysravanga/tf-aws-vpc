@@ -1,7 +1,7 @@
 terraform_state = attribute(
-  "terraform_state",
-  description: "The Terraform configuration under test must define the " \
-  "equivalently named output",
+  'terraform_state',
+  description: 'The Terraform configuration under test must define the ' \
+  'equivalently named output'
 ).chomp
 
 control 'state_file' do
