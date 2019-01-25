@@ -1,5 +1,5 @@
-name: default
-title: Sample InSpec Profile
+name: local
+title: InSpec Profile for checking terraform state
 maintainer: ukslee
 copyright: 2019 ukslee
 copyright_email: uks78n@gmail.com
@@ -7,3 +7,5 @@ license: Apache-2.0
 summary: An default InSpec Compliance Profile For an AWS terraform module
 version: 0.1.0
 inspec_version: '>= 2.3.5'
+supports:
+- platform-family: os
