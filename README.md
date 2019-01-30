@@ -1,6 +1,8 @@
 
 # tf-aws-vpc
 
+[![CircleCI](https://circleci.com/gh/ukslee/tf-aws-vpc/tree/master.svg?style=svg&circle-token=8ce4c4e45108572df75b9eb78d2e3798d07e26dc)](https://circleci.com/gh/ukslee/tf-aws-vpc/tree/master)
+
 Terraform module creating an aws vpc.
 
 ## Requirement
