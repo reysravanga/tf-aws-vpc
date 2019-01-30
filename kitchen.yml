@@ -10,6 +10,8 @@ platforms:
   - name: local
     driver:
       root_module_directory: test/fixtures/default
+      variables:
+        aws_region: <%= ENV['AWS_REGION'] %>
       variable_files:
         - test/fixtures/default/default.tfvars
     verifier:
@@ -22,12 +24,16 @@ platforms:
   - name: aws
     driver:
       root_module_directory: test/fixtures/default
+      variables:
+        aws_region: <%= ENV['AWS_REGION'] %>
       variable_files:
         - test/fixtures/default/default.tfvars
     verifier:
       systems:
         - name: aws
           backend: aws
+          attrs_outputs:
+            aws_vpc_id: vpc_id
           controls:
             - aws_vpc
 

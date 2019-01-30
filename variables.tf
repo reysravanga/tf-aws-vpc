@@ -9,5 +9,6 @@ variable "cidr" {
 
 variable "tags" {
   description = "The tag map for vpc"
-  default     = []
+  default     = {}
 }
+

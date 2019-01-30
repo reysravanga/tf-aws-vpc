@@ -114,6 +114,14 @@ jobs:
         description: "terraform version to test"
         type: string
         default: "0.11.11"
+      aws_region:
+        description: "aws region to test"
+        type: string
+        default: "us-west-2"
+      kitchen_instance:
+        description: "name of kitchen instance to test"
+        type: string
+        default: "local-local"
     docker:
       - image: circleci/ruby:latest
     steps:
@@ -129,12 +137,14 @@ jobs:
       - run:
           name: test-kitchen
           command: |
+            export tf_version=<<parameters.tf_version>>
+            export AWS_REGION=<<parameters.aws_region>>
+            export kitchen_instance=<<parameters.kitchen_instance>>
             git clone https://github.com/kamatama41/tfenv.git ~/.tfenv
             export PATH="$HOME/.tfenv/bin:$PATH"
-            export tf_version=<<parameters.tf_version>>
             tfenv install $tf_version
             tfenv use $tf_version
-            kitchen test --destroy
+            bundle exec kitchen test $kitchen_instance --destroy=always
 
 workflows:
   version: 2
@@ -147,7 +157,19 @@ workflows:
 #          name: tf_10
 #          tf_version: 0.10.8
       - kitchen_tc:
-          tf_version: 0.11.11
+          name: kt_local
+          kitchen_instance: local-local
           requires:
             - tf_11
-#            - tf_10
+      - kitchen_tc:
+          name: kt_apne2
+          aws_region: ap-northeast-2
+          kitchen_instance: aws-aws
+          requires:
+            - tf_11
+      - kitchen_tc:
+          name: kt_usw2
+          aws_region: us-west-2
+          kitchen_instance: aws-aws
+          requires:
+            - tf_11
