@@ -19,7 +19,8 @@ locals {
 {
   "cidr": ${jsonencode(var.cidr)},
   "tags": ${jsonencode(var.tags)}
-}EOD
+}
+EOD
 }
 
 output "variable_output_filename" {
