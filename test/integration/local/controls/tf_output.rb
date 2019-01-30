@@ -1,7 +1,6 @@
 terraform_state = attribute(
   'terraform_state',
-  description: 'The Terraform configuration under test must define the ' \
-  'equivalently named output'
+  description: 'The Terraform state file pathname'
 ).chomp
 
 control 'terraform_output' do
