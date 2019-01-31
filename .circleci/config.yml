@@ -130,7 +130,9 @@ jobs:
       - prepare_tf_code_volume
       - run:
           name: Install dependencies
-          command: bundle install
+          command: |
+            gem update --system
+            bundle install
       - run:
           name: check testsuite Rubocop
           command: rubocop test
