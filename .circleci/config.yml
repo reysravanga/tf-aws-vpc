@@ -132,7 +132,7 @@ jobs:
           name: Install dependencies
           command: |
             sudo gem update --system
-            sudo gem install -f buindler
+            sudo gem install -f bundler
             bundle install
       - run:
           name: check testsuite Rubocop
