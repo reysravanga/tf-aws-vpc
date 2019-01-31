@@ -131,7 +131,7 @@ jobs:
       - run:
           name: Install dependencies
           command: |
-            gem update --system
+            sudo gem update --system
             bundle install
       - run:
           name: check testsuite Rubocop
