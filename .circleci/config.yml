@@ -167,8 +167,8 @@ workflows:
             - tf_10
             - tf_11
       - kitchen_tc:
-          name: kt_inspec_apne2
-          aws_region: ap-northeast-2
+          name: kt_inspec_apne1
+          aws_region: ap-northeast-1
           kitchen_instance: inspec-aws
           requires:
             - kt_local
@@ -183,18 +183,26 @@ workflows:
           aws_region: us-west-2
           kitchen_instance: awspec-aws
           requires:
-            - kt_inspec_apne2
-            - kt_inspec_usw2
-          name: kt_awspec_usw2
-          aws_region: us-west-2
-          kitchen_instance: awspec-tc1-aws
-          requires:
-            - kt_inspec_apne2
+            - kt_inspec_apne1
             - kt_inspec_usw2
       - kitchen_tc:
-          name: kt_awspec_apne2
+          name: kt_awspec-tc1_usw2
           aws_region: us-west-2
           kitchen_instance: awspec-tc1-aws
           requires:
-            - kt_inspec_apne2
+            - kt_inspec_apne1
+            - kt_inspec_usw2
+      - kitchen_tc:
+          name: kt_awspec-apne1
+          aws_region: ap-northeast-1
+          kitchen_instance: awspec-aws
+          requires:
+            - kt_inspec_apne1
+            - kt_inspec_usw2
+      - kitchen_tc:
+          name: kt_awspec-tc1-apne1
+          aws_region: ap-northeast-1
+          kitchen_instance: awspec-tc1-aws
+          requires:
+            - kt_inspec_apne1
             - kt_inspec_usw2
