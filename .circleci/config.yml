@@ -148,7 +148,7 @@ jobs:
             export PATH="$HOME/.tfenv/bin:$PATH"
             tfenv install $tf_version
             tfenv use $tf_version
-            bundle exec kitchen test $kitchen_instance --destroy=always
+            kitchen test $kitchen_instance --destroy=always
 
 workflows:
   version: 2
