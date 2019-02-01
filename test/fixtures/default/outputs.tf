@@ -23,7 +23,8 @@ EOD
 {
   "vpc_name": ${jsonencode(var.vpc_name)},
   "cidr": ${jsonencode(var.cidr)},
-  "tags": ${jsonencode(var.tags)}
+  "tags": ${jsonencode(var.tags)},
+  "vpc_opts": ${jsonencode(var.vpc_opts)}
 }
 EOD
 }

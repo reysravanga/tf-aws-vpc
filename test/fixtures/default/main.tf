@@ -4,4 +4,5 @@ module "sample_mod" {
   vpc_name = "${var.vpc_name}-${terraform.workspace}"
   cidr     = "${var.cidr}"
   tags     = "${var.tags}"
+  vpc_opts = "${var.vpc_opts}"
 }

@@ -1,3 +1,4 @@
+require 'rhcl'
 require 'awspec'
 Awsecrets.load(secrets_path: File.expand_path(
   './secrets.yml', File.dirname(__FILE__)
@@ -21,3 +22,6 @@ print 'tfinput file: ' + @tfoutput_json['tfinput_filename']['value'] + "\n"
   File.read(@tfoutput_json['tfinput_filename']['value'])
 )
 print JSON.pretty_generate(@tfinput_json) + "\n\n"
+
+local_default_filename = 'locals.tf'
+@local_defaults = Rhcl.parse(File.open(local_default_filename))
