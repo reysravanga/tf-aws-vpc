@@ -133,7 +133,8 @@ jobs:
           command: |
             sudo gem update --system
             sudo gem install -f bundler
-            bundle install
+            bundle install --clean
+            gem install kitchen-terraform --source 'https://rubygems.org/'
       - run:
           name: check testsuite Rubocop
           command: rubocop test
