@@ -12,7 +12,8 @@ locals {
 
   tfstate_info_content = <<EOD
 {
-  "tfstate_path": ${jsonencode(local.terraform_state_filename)}
+  "tfstate_path": ${jsonencode(local.terraform_state_filename)},
+  "tf_workspace": ${jsonencode(terraform.workspace)}
 }
 EOD
 
@@ -20,6 +21,7 @@ EOD
 
   variable_output_content = <<EOD
 {
+  "vpc_name": ${jsonencode(var.vpc_name)},
   "cidr": ${jsonencode(var.cidr)},
   "tags": ${jsonencode(var.tags)}
 }
