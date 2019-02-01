@@ -6,14 +6,18 @@ provisioner:
 verifier:
   name: terraform
 
+driver: &aws_default_driver
+  root_module_directory: test/fixtures/default
+  variables:
+    aws_region: <%= ENV['AWS_REGION'] %>
+  variable_files:
+    - test/fixtures/default/default.tfvars
+
 platforms:
   - name: local
     driver:
-      root_module_directory: test/fixtures/default
-      variables:
-        aws_region: <%= ENV['AWS_REGION'] %>
-      variable_files:
-        - test/fixtures/default/default.tfvars
+      name: terraform
+    <<: *aws_default_driver
     verifier:
       systems:
         - name: local
@@ -23,24 +27,32 @@ platforms:
             - terraform_output
   - name: aws
     driver:
-      root_module_directory: test/fixtures/default
-      variables:
-        aws_region: <%= ENV['AWS_REGION'] %>
-      variable_files:
-        - test/fixtures/default/default.tfvars
+      name: terraform
+    <<: *aws_default_driver
+
+suites:
+  - name: local
+    includes:
+      - local
+  - name: inspec
     verifier:
       systems:
         - name: aws
           backend: aws
           attrs_outputs:
             aws_vpc_id: vpc_id
+            variable_output_filename: variable_output_filename
           controls:
             - aws_vpc
-
-suites:
-  - name: local
-    includes:
-      - local
-  - name: aws
     includes:
       - aws
+  - name: awspec
+    <<: *aws_default_driver
+    verifier:
+      name: awspec
+      patterns:
+      - "test/integration/awspec/*_spec.rb"
+      env_vars:
+        { fixture_dir: test/fixtures/default }
+    excludes:
+      - local

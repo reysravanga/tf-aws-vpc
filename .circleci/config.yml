@@ -130,7 +130,11 @@ jobs:
       - prepare_tf_code_volume
       - run:
           name: Install dependencies
-          command: bundle install
+          command: |
+            sudo gem update --system
+            sudo gem install -f bundler
+            bundle install --clean
+            gem install kitchen-terraform --source 'https://rubygems.org/'
       - run:
           name: check testsuite Rubocop
           command: rubocop test
@@ -144,7 +148,7 @@ jobs:
             export PATH="$HOME/.tfenv/bin:$PATH"
             tfenv install $tf_version
             tfenv use $tf_version
-            bundle exec kitchen test $kitchen_instance --destroy=always
+            kitchen test $kitchen_instance --destroy=always
 
 workflows:
   version: 2
@@ -153,23 +157,31 @@ workflows:
       - terraform_basic_tc:
           name: tf_11
           tf_version: 0.11.11
-#      - terraform_basic_tc:
-#          name: tf_10
-#          tf_version: 0.10.8
+      - terraform_basic_tc:
+          name: tf_10
+          tf_version: 0.10.8
       - kitchen_tc:
           name: kt_local
           kitchen_instance: local-local
           requires:
+            - tf_10
             - tf_11
       - kitchen_tc:
-          name: kt_apne2
+          name: kt_inspec_apne2
           aws_region: ap-northeast-2
-          kitchen_instance: aws-aws
+          kitchen_instance: inspec-aws
           requires:
-            - tf_11
+            - kt_local
       - kitchen_tc:
-          name: kt_usw2
+          name: kt_inspec_usw2
           aws_region: us-west-2
-          kitchen_instance: aws-aws
+          kitchen_instance: inspec-aws
           requires:
-            - tf_11
+            - kt_local
+      - kitchen_tc:
+          name: kt_awspec_usw2
+          aws_region: us-west-2
+          kitchen_instance: awspec-aws
+          requires:
+            - kt_inspec_apne2
+            - kt_inspec_usw2

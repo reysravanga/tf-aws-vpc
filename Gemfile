@@ -1,6 +1,6 @@
 source 'https://rubygems.org'
 
-gem 'test-kitchen'
-gem 'kitchen-terraform'
+gem 'awspec'
+gem 'kitchen-verifier-awspec'
 gem 'rake'
 gem 'rubocop'
