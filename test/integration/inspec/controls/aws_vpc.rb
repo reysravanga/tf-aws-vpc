@@ -27,7 +27,6 @@ vpc_instance_tenancy = if tfinput_json['vpc_opts'].key?('instance_tenancy')
                        end
 
 # test cases
-
 control 'aws_vpc' do
   title 'aws_vpc'
   desc 'Verifies aws vpc resource has proper options'
