@@ -56,3 +56,16 @@ suites:
         { fixture_dir: test/fixtures/default }
     excludes:
       - local
+  - name: awspec-tc1
+    <<: *aws_default_driver
+    driver:
+      variable_files:
+        - test/fixtures/default/tc-set1.tfvars
+    verifier:
+      name: awspec
+      patterns:
+      - "test/integration/awspec/*_spec.rb"
+      env_vars:
+        { fixture_dir: test/fixtures/default }
+    excludes:
+      - local
