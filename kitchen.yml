@@ -41,7 +41,7 @@ suites:
           backend: aws
           attrs_outputs:
             aws_vpc_id: vpc_id
-            variable_output_filename: variable_output_filename
+            tfinput_filename: tfinput_filename
           controls:
             - aws_vpc
     includes:

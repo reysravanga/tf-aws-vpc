@@ -1,14 +1,14 @@
 title 'Testcase for aws vpc'
 
 aws_vpc_id = attribute('aws_vpc_id')
-variable_output_filename = attribute(
-  'variable_output_filename',
+tfinput_filename = attribute(
+  'tfinput_filename',
   description: 'filename for terraform input variable values'
 ).chomp
-variables_json = JSON.parse(
-  File.read(variable_output_filename)
+tfinput_json = JSON.parse(
+  File.read(tfinput_filename)
 )
-print JSON.pretty_generate(variables_json)
+print JSON.pretty_generate(tfinput_json)
 
 control 'aws_vpc' do
   title 'aws_vpc'
@@ -16,6 +16,6 @@ control 'aws_vpc' do
 
   describe aws_vpc(aws_vpc_id) do
     it { should exist }
-    its('cidr_block') { should cmp variables_json['cidr'] }
+    its('cidr_block') { should cmp tfinput_json['cidr'] }
   end
 end

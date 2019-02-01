@@ -16,9 +16,8 @@ print JSON.pretty_generate(@tfstate_json) + "\n\n"
 @root_mod = @tfstate_json['modules'].find { |mod| mod['path'] == %w[root] }
 @tfoutput_json = @root_mod['outputs']
 
-print 'tfinput file: ' + @tfoutput_json['variable_output_filename']['value'] \
-        + "\n"
+print 'tfinput file: ' + @tfoutput_json['tfinput_filename']['value'] + "\n"
 @tfinput_json = JSON.parse(
-  File.read(@tfoutput_json['variable_output_filename']['value'])
+  File.read(@tfoutput_json['tfinput_filename']['value'])
 )
 print JSON.pretty_generate(@tfinput_json) + "\n\n"

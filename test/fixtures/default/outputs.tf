@@ -17,9 +17,9 @@ locals {
 }
 EOD
 
-  variable_output_filename = "${path.cwd}/input_vars.json"
+  tfinput_filename = "${path.cwd}/input_vars.json"
 
-  variable_output_content = <<EOD
+  tfinput_content = <<EOD
 {
   "vpc_name": ${jsonencode(var.vpc_name)},
   "cidr": ${jsonencode(var.cidr)},
@@ -35,14 +35,14 @@ output "terraform_state" {
   value = "${local.terraform_state_filename}"
 }
 
-output "variable_output_filename" {
+output "tfinput_filename" {
   description = "This output is used as an attribute in the state_file control"
-  value       = "${local.variable_output_filename}"
+  value       = "${local.tfinput_filename}"
 }
 
-resource "local_file" "variable_output_file" {
-  filename = "${local.variable_output_filename}"
-  content  = "${chomp(local.variable_output_content)}"
+resource "local_file" "tfinput_file" {
+  filename = "${local.tfinput_filename}"
+  content  = "${chomp(local.tfinput_content)}"
 }
 
 resource "local_file" "tfstate_info_file" {
