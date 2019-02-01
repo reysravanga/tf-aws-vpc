@@ -171,19 +171,17 @@ workflows:
           aws_region: ap-northeast-2
           kitchen_instance: inspec-aws
           requires:
-            - tf_10
-            - tf_11
+            - kt_local
       - kitchen_tc:
           name: kt_inspec_usw2
           aws_region: us-west-2
           kitchen_instance: inspec-aws
           requires:
-            - tf_10
-            - tf_11
+            - kt_local
       - kitchen_tc:
           name: kt_awspec_usw2
           aws_region: us-west-2
           kitchen_instance: awspec-aws
           requires:
-            - tf_10
-            - tf_11
+            - kt_inspec_apne2
+            - kt_inspec_usw2
