@@ -12,3 +12,7 @@ variable "tags" {
   default     = {}
 }
 
+variable "vpc_opts" {
+  description = "The additional options for the VPC resource"
+  default     = {}
+}
