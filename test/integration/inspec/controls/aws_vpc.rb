@@ -1,6 +1,9 @@
+require_relative 'spec_helper.rb'
 title 'Testcase for aws vpc'
 
 aws_vpc_id = attribute('aws_vpc_id')
+
+vpc_defaults = @local_defaults['locals']['default_vpc_opts']
 tfinput_filename = attribute(
   'tfinput_filename',
   description: 'filename for terraform input variable values'
@@ -10,6 +13,12 @@ tfinput_json = JSON.parse(
 )
 print JSON.pretty_generate(tfinput_json)
 
+vpc_instance_tenancy = if tfinput_json['vpc_opts'].key?('instance_tenancy')
+                         tfinput_json['vpc_opts']['instance_tenancy']
+                       else
+                         vpc_defaults['instance_tenancy']
+                       end
+
 control 'aws_vpc' do
   title 'aws_vpc'
   desc 'Verifies aws vpc resource has proper options'
@@ -17,5 +26,6 @@ control 'aws_vpc' do
   describe aws_vpc(aws_vpc_id) do
     it { should exist }
     its('cidr_block') { should cmp tfinput_json['cidr'] }
+    its('instance_tenancy') { should eq vpc_instance_tenancy }
   end
 end
