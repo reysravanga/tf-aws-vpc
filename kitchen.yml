@@ -41,13 +41,26 @@ suites:
           backend: aws
           attrs_outputs:
             aws_vpc_id: vpc_id
-            variable_output_filename: variable_output_filename
+            tfinput_filename: tfinput_filename
           controls:
             - aws_vpc
     includes:
       - aws
   - name: awspec
     <<: *aws_default_driver
+    verifier:
+      name: awspec
+      patterns:
+      - "test/integration/awspec/*_spec.rb"
+      env_vars:
+        { fixture_dir: test/fixtures/default }
+    excludes:
+      - local
+  - name: awspec-tc1
+    <<: *aws_default_driver
+    driver:
+      variable_files:
+        - test/fixtures/default/tc-set1.tfvars
     verifier:
       name: awspec
       patterns:
