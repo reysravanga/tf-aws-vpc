@@ -1,16 +1,20 @@
+title 'Testcase for tf outputs'
+
+# terraform state file path
 terraform_state = attribute(
   'terraform_state',
   description: 'The Terraform state file pathname'
 ).chomp
 
+tfstate_json = json(terraform_state)
+sample_mod = tfstate_json.modules
+                         .find { |mod| mod['path'] == %w[root sample_mod] }
+
+# test cases
 control 'terraform_output' do
   title 'terraform output check'
   desc 'Verifies that the Terraform state file contains proper output result'
 
-  tfstate_json = json(terraform_state)
-  print tfstate_json
-  sample_mod = tfstate_json.modules
-                           .find { |mod| mod['path'] == %w[root sample_mod] }
   describe sample_mod['outputs']['vpc_id']['value'] do
     it { should match(/vpc-.*/) }
   end

@@ -12,7 +12,11 @@ attributes:
   required: true
   description: 'The AWS VPC Id'
   type: string
-- name: variable_output_filename
+- name: terraform_state
+  required: true
+  description: 'pathname for terraform.tfstate'
+  type: string
+- name: tfintput_filename
   required: true
   description: 'filename for terraform input variable values'
   type: string

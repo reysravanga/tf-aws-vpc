@@ -14,9 +14,13 @@ driver: &aws_default_driver
     - test/fixtures/default/default.tfvars
 
 platforms:
-  - name: local
+  - name: aws
     driver:
       name: terraform
+    <<: *aws_default_driver
+
+suites:
+  - name: local
     <<: *aws_default_driver
     verifier:
       systems:
@@ -25,15 +29,18 @@ platforms:
           controls:
             - state_file
             - terraform_output
-  - name: aws
-    driver:
-      name: terraform
+            - vpc_attributes
+  - name: local-tc1
     <<: *aws_default_driver
-
-suites:
-  - name: local
-    includes:
-      - local
+    driver:
+      variable_files:
+        - test/fixtures/default/tc-set1.tfvars
+    verifier:
+      systems:
+        - name: local
+          backend: local
+          controls:
+            - vpc_attributes
   - name: inspec
     verifier:
       systems:
@@ -44,8 +51,6 @@ suites:
             tfinput_filename: tfinput_filename
           controls:
             - aws_vpc
-    includes:
-      - aws
   - name: awspec
     <<: *aws_default_driver
     verifier:
@@ -54,8 +59,6 @@ suites:
       - "test/integration/awspec/*_spec.rb"
       env_vars:
         { fixture_dir: test/fixtures/default }
-    excludes:
-      - local
   - name: awspec-tc1
     <<: *aws_default_driver
     driver:
@@ -67,5 +70,3 @@ suites:
       - "test/integration/awspec/*_spec.rb"
       env_vars:
         { fixture_dir: test/fixtures/default }
-    excludes:
-      - local

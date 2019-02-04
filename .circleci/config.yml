@@ -162,7 +162,13 @@ workflows:
           tf_version: 0.10.8
       - kitchen_tc:
           name: kt_local
-          kitchen_instance: local-local
+          kitchen_instance: local-aws
+          requires:
+            - tf_10
+            - tf_11
+      - kitchen_tc:
+          name: kt_local_tc1
+          kitchen_instance: local-tc1-aws
           requires:
             - tf_10
             - tf_11
@@ -172,12 +178,14 @@ workflows:
           kitchen_instance: inspec-aws
           requires:
             - kt_local
+            - kt_local_tc1
       - kitchen_tc:
           name: kt_inspec_usw2
           aws_region: us-west-2
           kitchen_instance: inspec-aws
           requires:
             - kt_local
+            - kt_local_tc1
       - kitchen_tc:
           name: kt_awspec_usw2
           aws_region: us-west-2
