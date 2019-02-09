@@ -17,11 +17,30 @@ private_subnets = @tfinput_json['private_subnets']
 subnet_tagsets = @tfinput_json['subnet_tagsets'].merge(default_subnet_tagset)
 subnet_optsets = @tfinput_json['subnet_optsets'].merge(default_subnet_optset)
 
+k8s_cluster_tag = @tfinput_json['k8s_cluster_tag']
+k8s_lbsubnet_index = @tfinput_json['k8s_lbsubnet_index']
+k8s_subnet_tags = {}
+unless @tfinput_json['k8s_cluster_tag'].eql? ''
+  k8s_tag_key = format('kubernetes.io/cluster/%<name>s',
+                       name: @tfinput_json['k8s_cluster_tag'].split('=').first)
+  k8s_tag_value = @tfinput_json['k8s_cluster_tag'].split('=').last
+  k8s_subnet_tags = { k8s_tag_key => k8s_tag_value }
+end
+k8s_public_lb_tags =
+  if k8s_cluster_tag.eql?('') then {}
+  else { 'kubernetes.io/role/elb' => 1 }
+  end
+k8s_private_lb_tags =
+  if k8s_cluster_tag.eql?('') then {}
+  else { 'kubernetes.io/role/internal-elb' => 1 }
+  end
+
 # summarize subnet options
 subnets = []
-public_subnets.each do |_, configs|
-  tagset = subnet_tagsets[configs[azs.length + 1]]
+public_subnets.each do |idx, configs|
   optset = subnet_optsets[configs[azs.length + 2]]
+  tagset = subnet_tagsets[configs[azs.length + 1]].merge(k8s_subnet_tags)
+  tagset.merge!(k8s_public_lb_tags) if k8s_lbsubnet_index.include?(idx)
 
   configs[1..azs.length].each do |cidr|
     subnet_name = format('%<vpc_name>s.public.%<subnet_name>s.%<az>s',
@@ -32,9 +51,10 @@ public_subnets.each do |_, configs|
   end
 end
 
-private_subnets.each do |_, configs|
-  tagset = subnet_tagsets[configs[azs.length + 1]]
+private_subnets.each do |idx, configs|
   optset = subnet_optsets[configs[azs.length + 2]]
+  tagset = subnet_tagsets[configs[azs.length + 1]].merge(k8s_subnet_tags)
+  tagset.merge!(k8s_private_lb_tags) if k8s_lbsubnet_index.include?(idx)
 
   configs[1..azs.length].each do |cidr|
     subnet_name = format('%<vpc_name>s.private.%<subnet_name>s.%<az>s',

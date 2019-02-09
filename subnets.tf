@@ -15,7 +15,11 @@ resource "aws_subnet" "public" {
 
   tags = "${merge( 
     local.subnet_tagsets[element(var.public_subnets[count.index / length(var.azs)], length(var.azs) + 1)],
-    map("Name", format("%s.public.%s.%s",var.vpc_name,element(var.public_subnets[count.index / length(var.azs)], 0),substr(var.azs[count.index % length(var.azs)], -1, -1)) )
+    map("Name", format("%s.public.%s.%s",
+                        var.vpc_name,element(var.public_subnets[count.index / length(var.azs)], 0),
+                        substr(var.azs[count.index % length(var.azs)], -1, -1)) ),
+    local.k8s_cluster_tags,
+    local.k8s_public_lb_tag_map[contains(var.k8s_lbsubnet_index["public"], count.index / length(var.azs)) ? var.k8s_cluster_tag : ""]
   )}"
 }
 
@@ -36,6 +40,10 @@ resource "aws_subnet" "private" {
 
   tags = "${merge( 
     local.subnet_tagsets[element(var.private_subnets[count.index / length(var.azs)], length(var.azs) + 1)],
-    map("Name", format("%s.private.%s.%s",var.vpc_name,element(var.private_subnets[count.index / length(var.azs)], 0),substr(var.azs[count.index % length(var.azs)], -1, -1)) )
+    map("Name", format("%s.private.%s.%s",
+                        var.vpc_name,element(var.private_subnets[count.index / length(var.azs)], 0),
+                        substr(var.azs[count.index % length(var.azs)], -1, -1)) ),
+    local.k8s_cluster_tags,
+    local.k8s_private_lb_tag_map[contains(var.k8s_lbsubnet_index["private"], count.index / length(var.azs)) ? var.k8s_cluster_tag : ""]
   )}"
 }

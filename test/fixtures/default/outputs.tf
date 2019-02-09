@@ -45,7 +45,12 @@ EOD
   "subnet_tagsets": ${jsonencode(var.subnet_tagsets)},
   "subnet_optsets": ${jsonencode(var.subnet_optsets)},
   "dbsubnet_index": ${jsonencode(var.dbsubnet_index)},
-  "cachesubnet_index": ${jsonencode(var.dbsubnet_index)}
+  "cachesubnet_index": ${jsonencode(var.dbsubnet_index)},
+
+  "k8s_cluster_tag": ${jsonencode(var.k8s_cluster_tag)},
+  "k8s_lbsubnet_index": ${jsonencode(var.k8s_lbsubnet_index)},
+
+  "": ""
 }
 EOD
 }

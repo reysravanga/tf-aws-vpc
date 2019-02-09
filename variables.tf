@@ -56,14 +56,30 @@ variable "subnet_tagsets" {
   type        = "map"
 }
 
+variable "k8s_cluster_tag" {
+  description = "k8s cluster name and resource lifecycle value: <clustername>=<owned/shared>"
+  type        = "string"
+  default     = ""
+}
+
+variable "k8s_lbsubnet_index" {
+  description = "The subnet index values for k8s loadbalancers"
+  type        = "map"
+
+  default = {
+    "public"  = []
+    "private" = []
+  }
+}
+
 variable "dbsubnet_index" {
-  description = "The index values for aws_db_subnet_group"
+  description = "The subnet index values for aws_db_subnet_group"
   type        = "map"
   default     = {}
 }
 
 variable "cachesubnet_index" {
-  description = "The index values for aws_elasticache_subnet_group"
+  description = "The subnet index values for aws_elasticache_subnet_group"
   type        = "map"
   default     = {}
 }

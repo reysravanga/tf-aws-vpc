@@ -25,6 +25,13 @@ vpc_enable_dns_hostnames =
   else
     vpc_defaults['enable_dns_hostnames']
   end
+k8s_cluster_tags = {}
+unless @tfinput_json['k8s_cluster_tag'].eql? ''
+  k8s_tag_key = format('kubernetes.io/cluster/%<name>s',
+                       name: @tfinput_json['k8s_cluster_tag'].split('=').first)
+  k8s_tag_value = @tfinput_json['k8s_cluster_tag'].split('=').last
+  k8s_cluster_tags = { k8s_tag_key => k8s_tag_value }
+end
 
 # test cases
 describe vpc(@tfoutput_json['vpc_id']['value']) do
@@ -35,9 +42,13 @@ describe vpc(@tfoutput_json['vpc_id']['value']) do
   vpc_tags.each do |key, value|
     it { should have_tag(key).value(value) }
   end
+  unless k8s_cluster_tags.empty?
+    k8s_cluster_tags.each do |key, value|
+      it { should have_tag(key).value(value) }
+    end
+  end
 
   its('instance_tenancy') { should eq vpc_instance_tenancy }
-
   if vpc_enable_dns_support == 'true'
     it { should have_vpc_attribute('enableDnsSupport') }
   else

@@ -11,4 +11,7 @@ module "sample_mod" {
   private_subnets = "${var.private_subnets}"
   subnet_tagsets  = "${var.subnet_tagsets}"
   subnet_optsets  = "${var.subnet_optsets}"
+
+  k8s_cluster_tag    = "${var.k8s_cluster_tag}"
+  k8s_lbsubnet_index = "${var.k8s_lbsubnet_index}"
 }
