@@ -8,17 +8,29 @@ summary: An InSpec Compliance Profile For AWS
 version: 0.1.0
 inspec_version: '>= 2.3.5'
 attributes:
-- name: aws_vpc_id
-  required: true
-  description: 'The AWS VPC Id'
-  type: string
 - name: terraform_state
   required: true
   description: 'pathname for terraform.tfstate'
+  type: string
+- name: terraform_workspace
+  required: true
+  description: 'terraform workspace name'
   type: string
 - name: tfintput_filename
   required: true
   description: 'filename for terraform input variable values'
   type: string
+- name: vpc_id
+  required: true
+  description: 'The AWS VPC Id'
+  type: string
+- name: public_subnet_ids
+  required: true
+  description: 'The AWS Subnet Ids for public subnets'
+  type: array
+- name: private_subnet_ids
+  required: true
+  description: 'The AWS Subnet Ids for private subnets'
+  type: array
 supports:
 - platform: aws

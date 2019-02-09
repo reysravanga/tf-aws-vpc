@@ -1,11 +1,11 @@
 require_relative 'spec_helper.rb'
 
 # module default values
-vpc_defaults = @local_defaults['locals']['default_vpc_opts']
+vpc_defaults = @local_defaults['default_vpc_opts'][0]
 
 # terraform variable inputs
 vpc_name = @tfinput_json['vpc_name'] + '-' + @tf_workspace
-vpc_tags = @tfinput_json['tags']
+vpc_tags = @tfinput_json['vpc_tags']
 vpc_opts = @tfinput_json['vpc_opts']
 vpc_instance_tenancy =
   if vpc_opts.key?('instance_tenancy')

@@ -1,4 +1,3 @@
-require 'rhcl'
 require 'awspec'
 Awsecrets.load(secrets_path: File.expand_path(
   './secrets.yml', File.dirname(__FILE__)
@@ -15,7 +14,11 @@ print 'tfstate file: ' + tfstate_filename + "\n"
 print JSON.pretty_generate(@tfstate_json) + "\n\n"
 
 @root_mod = @tfstate_json['modules'].find { |mod| mod['path'] == %w[root] }
+@sample_mod = @tfstate_json['modules'].find do |mod|
+  mod['path'] == %w[root sample_mod]
+end
 @tfoutput_json = @root_mod['outputs']
+@tfoutput_mod_json = @sample_mod['outputs']
 
 print 'tfinput file: ' + @tfoutput_json['tfinput_filename']['value'] + "\n"
 @tfinput_json = JSON.parse(
@@ -23,5 +26,5 @@ print 'tfinput file: ' + @tfoutput_json['tfinput_filename']['value'] + "\n"
 )
 print JSON.pretty_generate(@tfinput_json) + "\n\n"
 
-local_default_filename = 'locals.tf'
-@local_defaults = Rhcl.parse(File.open(local_default_filename))
+local_default_filename = 'defaults.tf.json'
+@local_defaults = JSON.parse(File.read(local_default_filename))['locals'][0]

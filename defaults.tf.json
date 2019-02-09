@@ -1,0 +1,31 @@
+{
+  "locals": [
+    {
+      "default_vpc_opts": [
+        {
+          "instance_tenancy": "default",
+          "enable_dns_support": "true",
+          "enable_dns_hostnames": "false",
+          "assign_generated_ipv6_cidr_block": "false"
+        }
+      ],
+      "default_subnet_tagset": [
+        {
+          "": [
+            {}
+          ]
+        }
+      ],
+      "default_subnet_optset": [
+        {
+          "": [
+            {
+              "map_public_ip_on_launch": "false",
+              "assign_ipv6_address_on_creation": "false"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

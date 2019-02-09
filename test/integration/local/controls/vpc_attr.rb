@@ -1,5 +1,3 @@
-require 'rhcl'
-
 title 'Testcase for vpc attributes'
 
 # terraform state file path
@@ -12,18 +10,16 @@ sample_mod = tfstate_json.modules
                          .find { |mod| mod['path'] == %w[root sample_mod] }
 
 # module default values
-local_default_filename = 'locals.tf'
-local_defaults = Rhcl.parse(File.open(local_default_filename))
-vpc_defaults = local_defaults['locals']['default_vpc_opts']
+local_default_filename = 'defaults.tf.json'
+local_defaults = JSON.parse(File.read(local_default_filename))
+vpc_defaults = local_defaults['locals'][0]['default_vpc_opts'][0]
 
 # terraform variable inputs
 tfinput_filename = attribute(
   'tfinput_filename',
   description: 'filename for terraform input variable values'
 ).chomp
-tfinput_json = JSON.parse(
-  File.read(tfinput_filename)
-)
+tfinput_json = JSON.parse(File.read(tfinput_filename))
 
 vpc_instance_tenancy =
   if tfinput_json['vpc_opts'].key?('instance_tenancy')
