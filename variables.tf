@@ -72,6 +72,13 @@ variable "k8s_lbsubnet_index" {
   }
 }
 
+variable "no_nat_subnet_index" {
+  description = "The subnet index values for private subnets without NAT gateway route"
+  type        = "list"
+
+  default = []
+}
+
 variable "dbsubnet_index" {
   description = "The subnet index values for aws_db_subnet_group"
   type        = "map"
@@ -82,4 +89,21 @@ variable "cachesubnet_index" {
   description = "The subnet index values for aws_elasticache_subnet_group"
   type        = "map"
   default     = {}
+}
+
+variable "nat_mode" {
+  description = "Nat gateway provisioning mode (zero/one/az/subnet)"
+  type        = "string"
+  default     = "one"
+}
+
+variable "nat_eips" {
+  description = "Pre-allocated Elastic Ips for Nat gateways. if it is supplied, its count should be match with the number of required Nat gateways regarding `nat_mode` option"
+  type        = "list"
+  default     = []
+}
+
+variable "num_nat_eips" {
+  description = "Number of pre-allocated Elastic Ips for Nat gateways. if it is supplied, it should be equal to the number of required Nat gateways regarding `nat_mode` option"
+  default     = 0
 }

@@ -6,6 +6,10 @@ variable "aws_profile" {
   default = "default"
 }
 
+variable "num_nat_eips" {
+  default = "zero"
+}
+
 # copy from module variables.tf
 
 variable "vpc_name" {
@@ -84,14 +88,33 @@ variable "k8s_lbsubnet_index" {
   }
 }
 
+variable "no_nat_subnet_index" {
+  description = "The subnet index values for private subnets without NAT gateway route"
+  type        = "list"
+
+  default = []
+}
+
 variable "dbsubnet_index" {
-  description = "The index values for aws_db_subnet_group"
+  description = "The subnet index values for aws_db_subnet_group"
   type        = "map"
   default     = {}
 }
 
 variable "cachesubnet_index" {
-  description = "The index values for aws_elasticache_subnet_group"
+  description = "The subnet index values for aws_elasticache_subnet_group"
   type        = "map"
   default     = {}
+}
+
+variable "nat_mode" {
+  description = "Nat gateway provisioning mode (zero/one/az/subnet)"
+  type        = "string"
+  default     = "one"
+}
+
+variable "nat_eips" {
+  description = "Elastic Ips for Nat gateways. its count should be match with required Nat gateways regarding `nat_mode` option"
+  type        = "list"
+  default     = []
 }

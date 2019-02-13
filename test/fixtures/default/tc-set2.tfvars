@@ -12,8 +12,6 @@ vpc_opts = {
   "enable_dns_support"               = "false"
   "enable_dns_hostnames"             = "true"
   "assign_generated_ipv6_cidr_block" = "true"
-  "enable_s3_endpoint"               = "false"
-  "enable_dynamodb_endpoint"         = "false"
 }
 
 # CIDR: 10.xyz.abc.0/24
@@ -30,9 +28,6 @@ public_subnets = {
   "0" = ["infra", "10.212.101.0/24", "10.212.102.0/24", "10.212.103.0/24", "infra", "public"]
   "1" = ["app", "10.212.111.0/24", "10.212.112.0/24", "10.212.113.0/24", "app", ""]
   "2" = ["lb", "10.212.121.0/24", "10.212.122.0/24", "10.212.123.0/24", "", ""]
-  "3" = ["cache", "10.212.131.0/24", "10.212.132.0/24", "10.212.133.0/24", "", ""]
-  "4" = ["db", "10.212.141.0/24", "10.212.142.0/24", "10.212.143.0/24", "", ""]
-  "5" = ["lb2", "10.212.151.0/24", "10.212.152.0/24", "10.212.153.0/24", "", ""]
 }
 
 private_subnets = {
@@ -63,22 +58,22 @@ subnet_tagsets = {
 k8s_cluster_tag = "test_k8s_cluster=owned"
 
 k8s_lbsubnet_index = {
-  "public"  = ["2", "5"]
+  "public"  = ["2"]
   "private" = ["1"]
 }
 
 cachesubnet_index = {
-  "public"  = ["3"]
+  "public"  = []
   "private" = ["2"]
 }
 
 dbsubnet_index = {
-  "public"  = ["4"]
+  "public"  = []
   "private" = ["3"]
 }
 
-num_nat_eips = "az"
+num_nat_eips = "subnet"
 
-nat_mode = "az"
+nat_mode = "subnet"
 
-no_nat_subnet_index = ["3"]
+no_nat_subnet_index = ["2", "3"]

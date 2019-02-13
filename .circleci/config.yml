@@ -86,7 +86,7 @@ commands:
             export tf_modules=$(egrep -rh "source[\ ]*=[ ]*\"" ./ | awk -F '"' '{print $2}' | sort -u | paste -s -d ',' -)
             echo "\e[1;31mtf_modules to be ignored:\e[0m $tf_modules"
             echo "refer to https://github.com/wata727/tflint/issues/167 for details"
-            find $(pwd) -type f -name "*.tf" -exec dirname {} \; | sed "s/$(pwd|sed 's/\//\\\//g')/${workdir//\//\\/}/" | sort -u | while read pn; do docker run --rm --volumes-from code --workdir $pn -t wata727/tflint -q --deep --ignore-module=$tf_modules || (echo -e "\e[1;31m✗ ${pn//${workdir//\//\\/}/\.}\e[0m"; exit 1); if [[ $? -eq 0 ]]; then echo -e "\e[1;32m√ ${pn//${workdir//\//\\/}/\.}\e[0m"; fi done
+            find $(pwd) -type f -name "*.tf" -exec dirname {} \; | sed "s/$(pwd|sed 's/\//\\\//g')/${workdir//\//\\/}/" | sort -u | while read pn; do docker run --rm --volumes-from code --workdir $pn -t wata727/tflint -q --ignore-module=$tf_modules || (echo -e "\e[1;31m✗ ${pn//${workdir//\//\\/}/\.}\e[0m"; exit 1); if [[ $? -eq 0 ]]; then echo -e "\e[1;32m√ ${pn//${workdir//\//\\/}/\.}\e[0m"; fi done
 
 jobs:
   terraform_basic_tc:
@@ -170,6 +170,10 @@ workflows:
           <<: *local_checks
           name: kt_local_tc1
           kitchen_instance: local-tc1-aws
+      - kitchen_tc:
+          <<: *local_checks
+          name: kt_local_tc2
+          kitchen_instance: local-tc2-aws
       - kitchen_tc: &inspec_checks
           name: kt_inspec_apne1
           aws_region: ap-northeast-1
@@ -205,6 +209,10 @@ workflows:
           kitchen_instance: awspec-tc1-aws
       - kitchen_tc:
           <<: *awspec_checks
+          name: kt_awspec-tc2_usw2
+          kitchen_instance: awspec-tc2-aws
+      - kitchen_tc:
+          <<: *awspec_checks
           name: kt_awspec-apne1
           aws_region: ap-northeast-1
       - kitchen_tc:
@@ -212,3 +220,8 @@ workflows:
           name: kt_awspec-tc1-apne1
           aws_region: ap-northeast-1
           kitchen_instance: awspec-tc1-aws
+      - kitchen_tc:
+          <<: *awspec_checks
+          name: kt_awspec-tc2-apne1
+          aws_region: ap-northeast-1
+          kitchen_instance: awspec-tc2-aws

@@ -6,6 +6,15 @@ vpc_id = attribute('vpc_id')
 public_subnet_ids = attribute('public_subnet_ids')
 private_subnet_ids = attribute('private_subnet_ids')
 
+# terraform state file path
+terraform_state = attribute(
+  'terraform_state',
+  description: 'The Terraform state file pathname'
+).chomp
+tfstate_json = JSON.parse(File.read(terraform_state))
+sample_mod = tfstate_json['modules']
+             .find { |mod| mod['path'] == %w[root sample_mod] }
+
 # module default values
 local_default_filename = 'defaults.tf.json'
 local_defaults = JSON.parse(File.read(local_default_filename))['locals'][0]
@@ -76,11 +85,11 @@ private_subnets.each do |_, configs|
   end
 end
 
-# test cases
 control 'aws_subnet' do
   title 'aws_subnet'
   desc 'Verifies aws subnet resources has proper options'
 
+  # test cases for subnets
   describe aws_subnets.where(vpc_id: vpc_id) do
     its('states') { should_not include 'pending' }
   end
@@ -97,6 +106,18 @@ control 'aws_subnet' do
       else
         it { should_not be_mapping_public_ip_on_launch }
       end
+    end
+  end
+
+  # test cases for route tables
+  public_route_table_id =
+    sample_mod['outputs']['public_route_table_id']['value']
+  describe aws_route_table(public_route_table_id) do
+    it { should exist }
+  end
+  sample_mod['outputs']['private_route_table_ids']['value'].each do |rtb_id|
+    describe aws_route_table(rtb_id) do
+      it { should exist }
     end
   end
 end

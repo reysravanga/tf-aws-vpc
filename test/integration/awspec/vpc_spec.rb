@@ -5,6 +5,7 @@ vpc_defaults = @local_defaults['default_vpc_opts'][0]
 
 # terraform variable inputs
 vpc_name = @tfinput_json['vpc_name'] + '-' + @tf_workspace
+vpc_cidr = @tfinput_json['vpc_cidr']
 vpc_tags = @tfinput_json['vpc_tags']
 vpc_opts = @tfinput_json['vpc_opts']
 vpc_instance_tenancy =
@@ -37,7 +38,6 @@ end
 describe vpc(@tfoutput_json['vpc_id']['value']) do
   it { should exist }
   it { should be_available }
-
   it { should have_tag('Name').value(vpc_name) }
   vpc_tags.each do |key, value|
     it { should have_tag(key).value(value) }
@@ -48,6 +48,7 @@ describe vpc(@tfoutput_json['vpc_id']['value']) do
     end
   end
 
+  its('cidr_block') { should eq vpc_cidr }
   its('instance_tenancy') { should eq vpc_instance_tenancy }
   if vpc_enable_dns_support == 'true'
     it { should have_vpc_attribute('enableDnsSupport') }

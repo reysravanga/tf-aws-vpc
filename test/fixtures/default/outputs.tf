@@ -50,6 +50,11 @@ EOD
   "k8s_cluster_tag": ${jsonencode(var.k8s_cluster_tag)},
   "k8s_lbsubnet_index": ${jsonencode(var.k8s_lbsubnet_index)},
 
+  "nat_eips": ${jsonencode(aws_eip.nat_eips.*.id)},
+  "nat_mode": ${jsonencode(var.nat_mode)},
+  "no_nat_subnet_index": ${jsonencode(var.no_nat_subnet_index)},
+  "num_nat_eips": ${jsonencode(var.num_nat_eips)},
+
   "": ""
 }
 EOD
@@ -80,4 +85,12 @@ resource "local_file" "tfinput_file" {
 resource "local_file" "tfstate_info_file" {
   filename = "${local.tfstate_info_filename}"
   content  = "${chomp(local.tfstate_info_content)}"
+}
+
+output "s3_prefix_list_id" {
+  value = "${join(",", data.aws_vpc_endpoint.s3.*.prefix_list_id)}"
+}
+
+output "dynamodb_prefix_list_id" {
+  value = "${join(",", data.aws_vpc_endpoint.dynamodb.*.prefix_list_id)}"
 }

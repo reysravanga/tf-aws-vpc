@@ -1,3 +1,4 @@
+# Public subnet resources
 resource "aws_subnet" "public" {
   count = "${length(keys(var.public_subnets)) * length(var.azs)}"
 
@@ -23,6 +24,21 @@ resource "aws_subnet" "public" {
   )}"
 }
 
+resource "aws_route_table" "public" {
+  count = "${length(keys(var.public_subnets)) > 0 ? 1 : 0}"
+
+  vpc_id = "${aws_vpc.this.id}"
+  tags   = "${merge(var.vpc_tags, map("Name", format("%s.public.rt", var.vpc_name)))}"
+}
+
+resource "aws_route_table_association" "public" {
+  count = "${length(keys(var.public_subnets)) > 0 ? length(keys(var.public_subnets)) * length(var.azs) : 0}"
+
+  subnet_id      = "${element(aws_subnet.public.*.id, count.index)}"
+  route_table_id = "${element(aws_route_table.public.*.id, 0)}"
+}
+
+# Private subnet resources
 resource "aws_subnet" "private" {
   count = "${length(keys(var.private_subnets)) * length(var.azs)}"
 
@@ -46,4 +62,22 @@ resource "aws_subnet" "private" {
     local.k8s_cluster_tags,
     local.k8s_private_lb_tag_map[contains(var.k8s_lbsubnet_index["private"], count.index / length(var.azs)) ? var.k8s_cluster_tag : ""]
   )}"
+}
+
+resource "aws_route_table" "private" {
+  count = "${length(keys(var.private_subnets)) * length(var.azs)}"
+
+  vpc_id = "${aws_vpc.this.id}"
+
+  tags = "${merge(var.vpc_tags, map("Name", format("%s.private.%s.%s.rt",
+                        var.vpc_name,element(var.private_subnets[count.index / length(var.azs)], 0),
+                        substr(var.azs[count.index % length(var.azs)], -1, -1)) )
+                   )}"
+}
+
+resource "aws_route_table_association" "private" {
+  count = "${length(keys(var.private_subnets)) * length(var.azs)}"
+
+  subnet_id      = "${element(aws_subnet.private.*.id, count.index)}"
+  route_table_id = "${element(aws_route_table.private.*.id, count.index)}"
 }

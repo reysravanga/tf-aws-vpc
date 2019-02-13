@@ -4,7 +4,7 @@ driver:
 provisioner:
   name: terraform
 verifier:
-  name: terraform
+  name: awspec
 
 platforms:
   - name: aws
@@ -18,8 +18,10 @@ platforms:
 
 suites:
   - name: local
-    <<: *aws_default_driver
-    verifier:
+    driver:
+      <<: *aws_default_driver
+    verifier: &inspec_local_verifier
+      name: terraform
       systems:
         - name: local
           backend: local
@@ -28,19 +30,26 @@ suites:
             - terraform_output
             - vpc_attributes
   - name: local-tc1
-    <<: *aws_default_driver
     driver:
+      <<: *aws_default_driver
       variable_files:
         - test/fixtures/default/tc-set1.tfvars
         - test/fixtures/default/<%= ENV['AWS_REGION'] %>.tfvars
     verifier:
-      systems:
-        - name: local
-          backend: local
-          controls:
-            - vpc_attributes
+      <<: *inspec_local_verifier
+  - name: local-tc2
+    driver:
+      <<: *aws_default_driver
+      variable_files:
+        - test/fixtures/default/tc-set2.tfvars
+        - test/fixtures/default/<%= ENV['AWS_REGION'] %>.tfvars
+    verifier:
+      <<: *inspec_local_verifier
   - name: inspec
-    verifier: &inspec_default_aws_verifier
+    driver:
+      <<: *aws_default_driver
+    verifier: &inspec_default_verifier
+      name: terraform
       systems:
         - name: aws
           backend: aws
@@ -54,29 +63,37 @@ suites:
             - aws_vpc
             - aws_subnet
   - name: inspec-tc1
-    <<: *inspec_default_aws_verifier
-    <<: *aws_default_driver
     driver:
+      <<: *aws_default_driver
       variable_files:
         - test/fixtures/default/tc-set1.tfvars
         - test/fixtures/default/<%= ENV['AWS_REGION'] %>.tfvars
-  - name: awspec
-    <<: *aws_default_driver
     verifier:
-      name: awspec
+      name: terraform
+      <<: *inspec_default_verifier
+  - name: awspec
+    driver:
+      <<: *aws_default_driver
+    verifier: &awspec_default_verifier
       patterns:
       - "test/integration/awspec/*_spec.rb"
       env_vars:
         { fixture_dir: test/fixtures/default }
   - name: awspec-tc1
-    <<: *aws_default_driver
     driver:
+      <<: *aws_default_driver
       variable_files:
         - test/fixtures/default/tc-set1.tfvars
         - test/fixtures/default/<%= ENV['AWS_REGION'] %>.tfvars
     verifier:
       name: awspec
-      patterns:
-      - "test/integration/awspec/*_spec.rb"
-      env_vars:
-        { fixture_dir: test/fixtures/default }
+      <<: *awspec_default_verifier
+  - name: awspec-tc2
+    driver:
+      <<: *aws_default_driver
+      variable_files:
+        - test/fixtures/default/tc-set2.tfvars
+        - test/fixtures/default/<%= ENV['AWS_REGION'] %>.tfvars
+    verifier:
+      name: awspec
+      <<: *awspec_default_verifier
