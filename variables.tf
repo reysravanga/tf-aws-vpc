@@ -54,6 +54,8 @@ variable "subnet_optsets" {
 variable "subnet_tagsets" {
   description = "tag set maps for subnets"
   type        = "map"
+
+  default = {}
 }
 
 variable "k8s_cluster_tag" {
