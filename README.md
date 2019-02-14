@@ -5,6 +5,12 @@
 
 Terraform module creating an aws vpc.
 
+## Examples
+
+* [Basic Example](https://github.com/ukslee/tf-aws-vpc/blob/master/examples/basic)
+* [Minimal Example](https://github.com/ukslee/tf-aws-vpc/blob/master/examples/minimal)
+* [Complete Example](https://github.com/ukslee/tf-aws-vpc/blob/master/examples/complete)
+
 ## Requirement
 
 Target goal of this module is creating all basic resources AWS VPC related with production grade requirements.
