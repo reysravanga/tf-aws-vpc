@@ -26,24 +26,49 @@ variable "azs" {
   type        = "list"
 }
 
+#
+# Subnet config map
+#   {idx} = [ {name}, {cidr for the 1st az} ... {cidr for the last az}, {tagset}, {optset} ]
+#
+# Option value "" for {tagset}, {optset} will use empty tagset and module default optset
+#
+# Example with 3 azs case:
+#  public_subnets = {
+#    "0" = ["infra", "10.10.101.0/24", "10.10.102.0/24", "10.10.103.0/24", "infra_tag", "infra_opt"]
+#    "1" = ["app", "10.10.111.0/24", "10.10.112.0/24", "10.10.113.0/24", "", ""]
+#    "2" = ["lb", "10.10.121.0/24", "10.10.122.0/24", "10.10.123.0/24", "lb_tag", "lb_opt"]
+#  }
+#
 variable "public_subnets" {
   description = "public subnets"
   type        = "map"
-
-  default = {
-    "0" = ["infra", "10.10.101.0/24", "10.10.102.0/24", "10.10.103.0/24", "", ""]
-  }
 }
 
 variable "private_subnets" {
   description = "private subnets"
   type        = "map"
-
-  default = {
-    "0" = ["app", "10.10.11.0/24", "10.10.12.0/24", "10.10.13.0/24", "", ""]
-  }
 }
 
+#
+# Subnet option config map
+#
+# Available options:
+#  - instance_tenancy: *default / dedicated
+#  - enable_dns_support: *true / false
+#  - enable_dns_hostnames: true / *false
+#  - assign_generated_ipv6_cidr_block: true / *false
+#  - enable_s3_endpoint: *true / false
+#  - enable_dynamodb_endpoint: *true / false
+# Note: Module default value is marked with '*' like *true
+#
+# Example case:
+#  subnet_optsets = {
+#    "infra_opt" = {
+#      "map_public_ip_on_launch"         = "true"
+#      "assign_ipv6_address_on_creation" = "false"
+#    }
+#  }
+#
 variable "subnet_optsets" {
   description = "option set maps for subnets"
   type        = "map"
@@ -93,6 +118,17 @@ variable "cachesubnet_index" {
   default     = {}
 }
 
+#
+# Nat gateway deploy mode
+#
+# Available options:
+#  - zero: No Nat gateway
+#  - one: One Nat gateway for every private subnets
+#  - az: One Nat gateway per az.
+#        Every private subnets will be mapped to a Nat gateway in the same az
+#  - subnet: One Nat gateway per subnet.
+#            Every private subnets will have dedicated Nat gateway in the same az
+#
 variable "nat_mode" {
   description = "Nat gateway provisioning mode (zero/one/az/subnet)"
   type        = "string"
