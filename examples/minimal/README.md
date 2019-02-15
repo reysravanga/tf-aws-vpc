@@ -5,7 +5,7 @@ Example of tf-aws-vpc usage with minimal input variables
 
 ## Usage
 
-``` yaml
+``` terraform
 module "minimal_vpc" {
   source = "github.com/ukslee/tf-aws-vpc.git?ref=v0.1.0"
 

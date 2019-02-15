@@ -3,10 +3,10 @@ provider "aws" {
   profile = "${var.aws_profile}"
 }
 
-module "basic_vpc" {
+module "complete_vpc" {
   source = "github.com/ukslee/tf-aws-vpc.git?ref=v0.1.0"
 
-  vpc_name = "basic-vpc"
+  vpc_name = "complete-vpc"
   vpc_cidr = "10.10.0.0/16"
 
   vpc_tags = {
