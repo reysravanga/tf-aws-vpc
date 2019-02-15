@@ -181,6 +181,7 @@ workflows:
           requires:
             - kt_local
             - kt_local_tc1
+            - kt_local_tc2
       - kitchen_tc:
           <<: *inspec_checks
           name: kt_inspec-tc1_apne1
