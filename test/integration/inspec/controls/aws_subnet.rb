@@ -34,7 +34,9 @@ tfinput_filename = attribute(
 tfinput_json = JSON.parse(File.read(tfinput_filename))
 print JSON.pretty_generate(tfinput_json) + "\n\n"
 
-vpc_name = tfinput_json['vpc_name'] + '-' + tf_workspace
+vpc_name = tfinput_json['vpc_name'] +
+           '-' + tf_workspace +
+           '-' + tfinput_json['build_num']
 azs = tfinput_json['azs']
 public_subnets = tfinput_json['public_subnets']
 private_subnets = tfinput_json['private_subnets']

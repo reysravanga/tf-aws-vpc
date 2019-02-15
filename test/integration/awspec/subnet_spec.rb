@@ -25,7 +25,7 @@ s3_endpoint_prefix_id = @tfoutput_json['s3_prefix_list_id']['value']
 dynamodb_endpoint_prefix_id = @tfoutput_json['dynamodb_prefix_list_id']['value']
 
 # terraform variable inputs
-vpc_name = @tfinput_json['vpc_name'] + '-' + @tf_workspace
+vpc_name = @tfinput_json['vpc_name'] + '-' + @tf_workspace + '-' + @build_num
 vpc_cidr = @tfinput_json['vpc_cidr']
 vpc_tags = @tfinput_json['vpc_tags']
 vpc_opts = @tfinput_json['vpc_opts']

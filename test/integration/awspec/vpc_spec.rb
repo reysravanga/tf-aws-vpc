@@ -4,7 +4,7 @@ require_relative 'spec_helper.rb'
 vpc_defaults = @local_defaults['default_vpc_opts'][0]
 
 # terraform variable inputs
-vpc_name = @tfinput_json['vpc_name'] + '-' + @tf_workspace
+vpc_name = @tfinput_json['vpc_name'] + '-' + @tf_workspace + '-' + @build_num
 vpc_cidr = @tfinput_json['vpc_cidr']
 vpc_tags = @tfinput_json['vpc_tags']
 vpc_opts = @tfinput_json['vpc_opts']

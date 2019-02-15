@@ -25,6 +25,7 @@ print 'tfinput file: ' + @tfoutput_json['tfinput_filename']['value'] + "\n"
   File.read(@tfoutput_json['tfinput_filename']['value'])
 )
 print JSON.pretty_generate(@tfinput_json) + "\n\n"
+@build_num = @tfinput_json['build_num']
 
 local_default_filename = 'defaults.tf.json'
 @local_defaults = JSON.parse(File.read(local_default_filename))['locals'][0]

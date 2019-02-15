@@ -4,7 +4,7 @@ provider "aws" {
 }
 
 module "minimal_vpc" {
-  source = "github.com/ukslee/tf-aws-vpc.git?ref=subnet_tags"
+  source = "github.com/ukslee/tf-aws-vpc.git?ref=v0.1.0"
 
   vpc_name = "minimal-vpc"
   vpc_cidr = "10.10.0.0/16"

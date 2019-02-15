@@ -55,7 +55,7 @@ EOD
   "no_nat_subnet_index": ${jsonencode(var.no_nat_subnet_index)},
   "num_nat_eips": ${jsonencode(var.num_nat_eips)},
 
-  "": ""
+  "build_num": ${jsonencode(local.build_num)}
 }
 EOD
 }

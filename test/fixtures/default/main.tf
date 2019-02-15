@@ -1,4 +1,5 @@
 locals {
+  build_num        = "${var.build_num == "" ? random_integer.build_num.result : var.build_num }"
   nat_uniq_subnets = "${distinct(concat(var.no_nat_subnet_index, keys(var.private_subnets)))}"
   nat_subnet_index = "${slice(local.nat_uniq_subnets, length(var.no_nat_subnet_index), length(local.nat_uniq_subnets))}"
 
@@ -13,6 +14,11 @@ locals {
   enable_dynamodb_endpoint = "${lookup(var.vpc_opts, "enable_dynamodb_endpoint", "true")}"
 }
 
+resource "random_integer" "build_num" {
+  min = 0
+  max = 9999
+}
+
 resource "aws_eip" "nat_eips" {
   count = "${local.num_nat_gw_map[var.num_nat_eips]}"
   vpc   = true
@@ -25,7 +31,7 @@ resource "aws_eip" "nat_eips" {
 module "sample_mod" {
   source = "../../../"
 
-  vpc_name = "${var.vpc_name}-${terraform.workspace}"
+  vpc_name = "${var.vpc_name}-${terraform.workspace}-${local.build_num}"
   vpc_cidr = "${var.vpc_cidr}"
   vpc_tags = "${var.vpc_tags}"
   vpc_opts = "${var.vpc_opts}"

@@ -10,6 +10,10 @@ variable "num_nat_eips" {
   default = "zero"
 }
 
+variable "build_num" {
+  default = ""
+}
+
 # copy from module variables.tf
 
 variable "vpc_name" {

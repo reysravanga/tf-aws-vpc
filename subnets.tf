@@ -8,11 +8,15 @@ resource "aws_subnet" "public" {
 
   map_public_ip_on_launch = "${lookup(
     local.subnet_optsets[element(var.public_subnets[count.index / length(var.azs)], length(var.azs) + 2)],
-    "map_public_ip_on_launch")}"
+    "map_public_ip_on_launch",
+    lookup(local.default_subnet_optset[""], "map_public_ip_on_launch")
+    )}"
 
   assign_ipv6_address_on_creation = "${lookup(
     local.subnet_optsets[element(var.public_subnets[count.index / length(var.azs)], length(var.azs) + 2)],
-    "assign_ipv6_address_on_creation")}"
+    "assign_ipv6_address_on_creation",
+    lookup(local.default_subnet_optset[""], "assign_ipv6_address_on_creation")
+    )}"
 
   tags = "${merge( 
     local.subnet_tagsets[element(var.public_subnets[count.index / length(var.azs)], length(var.azs) + 1)],
