@@ -68,8 +68,8 @@ commands:
           command: |
             export workdir=<<parameters.workdir>>
             export tf_version=<<parameters.tf_version>>
-            docker run --volumes-from code --workdir $workdir hashicorp/terraform:$tf_version fmt -write=false
-            if [[ $? -ne 0 ]]; then echo -e "\e[1;31mRun \`terraform fmt\` before tf source commit\e[0m" && exit 1; fi
+            export fmt_diff=$(docker run --volumes-from code --workdir $workdir hashicorp/terraform:$tf_version fmt -write=false | wc -l)
+            if [[ $fmt_diff -ne 0 ]]; then echo -e "\e[1;31mRun \`terraform fmt\` before tf source commit\e[0m" && exit 1; fi
   tflint_check:
     description: "tflint check"
     parameters:
