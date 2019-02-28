@@ -39,3 +39,19 @@ locals {
   enable_s3_endpoint       = "${lookup(var.vpc_opts, "enable_s3_endpoint", local.default_vpc_opts["enable_s3_endpoint"])}"
   enable_dynamodb_endpoint = "${lookup(var.vpc_opts, "enable_dynamodb_endpoint", local.default_vpc_opts["enable_dynamodb_endpoint"])}"
 }
+
+data "null_data_source" "public_subnet_keys" {
+  count = "${length(keys(var.public_subnets))}"
+
+  inputs = {
+    key = "${element(var.public_subnets[count.index], 0)}"
+  }
+}
+
+data "null_data_source" "private_subnet_keys" {
+  count = "${length(keys(var.private_subnets))}"
+
+  inputs = {
+    key = "${element(var.private_subnets[count.index], 0)}"
+  }
+}

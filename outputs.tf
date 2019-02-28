@@ -14,8 +14,16 @@ output "azs" {
   value       = "${var.azs}"
 }
 
+output "public_subnet_keys" {
+  value = "${data.null_data_source.public_subnet_keys.*.outputs.key}"
+}
+
 output "public_subnet_ids" {
   value = "${aws_subnet.public.*.id}"
+}
+
+output "private_subnet_keys" {
+  value = "${data.null_data_source.private_subnet_keys.*.outputs.key}"
 }
 
 output "private_subnet_ids" {
